@@ -183,63 +183,63 @@ class EditorHandler {
         jsonObject.Contacts = [];
         [...this.#contactsDiv.children].forEach(element => {
             const children = element.children;
-            const type = children[0].selectedIndex;
-            const value = children[1].value;
+            const type = children[1].children[0].selectedIndex;
+            const value = children[1].children[1].value;
             jsonObject.Contacts.push(new Contact(type, value));
         });
         
         jsonObject.Links = [];
         [...this.#linksDiv.children].forEach(element => {
             const children = element.children;
-            const name = children[0].value;
-            const value = children[1].value;
+            const name = children[1].children[0].value;
+            const value = children[1].children[1].value;
             jsonObject.Links.push(new Link(name, value));
         });
         
         jsonObject.WorkBlocs = [];
         [...this.#worksDiv.children].forEach((element, index) => {
             const children = element.children;
-            const name = children[0].children[1].value;
-            const corporation = children[1].children[1].value;
-            const fromDate = children[2].children[1].value;
-            const toDate = children[2].children[2].value;
-            const description = children[3].value;
+            const name = children[1].children[0].children[1].value;
+            const corporation = children[1].children[1].children[1].value;
+            const fromDate = children[1].children[2].children[1].value;
+            const toDate = children[1].children[2].children[2].value;
+            const description = children[1].children[3].value;
             jsonObject.WorkBlocs.push(new WorkBloc(name, corporation, fromDate, toDate, description));
         });
         
         jsonObject.EducationBlocs = [];
         [...this.#educationsDiv.children].forEach(element => {
            const children = element.children;
-           const name = children[1].value;
-           const date = children[4].value;
+           const name = children[1].children[1].value;
+           const date = children[1].children[4].value;
            jsonObject.EducationBlocs.push(new EducationBloc(name, date));
         });
         
         jsonObject.Projects = [];
         [...this.#projectsDiv.children].forEach((element, index) => {
             const children = element.children;
-            const name = children[0].children[1].value;
-            const date = children[1].children[1].value;
-            const description =  children[2].value;
+            const name = children[1].children[0].children[1].value;
+            const date = children[1].children[1].children[1].value;
+            const description =  children[1].children[2].value;
             jsonObject.Projects.push(new Project(name, date, description));
         })
 
         jsonObject.Languages = [];
         [...this.#languagesDiv.children].forEach(element => {
             const children = element.children;
-            const name = children[0].value;
-            const level = children[1].selectedIndex;
+            const name = children[1].children[0].value;
+            const level = children[1].children[1].selectedIndex;
             jsonObject.Languages.push(new Language(name, level));
         });
         
         jsonObject.Skills = [];
         [...this.#skillsDiv.children].forEach(element => {
-            jsonObject.Skills.push(element.children[0].value);
+            jsonObject.Skills.push(element.children[1].children[0].value);
         })
 
         jsonObject.Hobbies = [];
         [...this.#hobbiesDiv.children].forEach(element => {
-            jsonObject.Hobbies.push(element.children[0].value);
+            jsonObject.Hobbies.push(element.children[1].children[0].value);
         })
         
         const button = document.createElement("a");
@@ -265,6 +265,54 @@ class EditorHandler {
         await fetch(this.#systemLanguageSelect.value).then(response => this.#systemJson = response.json()).then(data => this.#systemJson = data);
     }
     
+    #encapsulateInDraggable(htmlElement) {
+
+        // Create drag button
+        const div = document.createElement("div");
+        div.className = "draggableDiv";
+        div.draggable = true;
+        div.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            className="bi bi-arrows-move" viewBox="0 0 16 16">
+            <path fill-rule="evenodd"
+                  d="M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10M.146 8.354a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L1.707 7.5H5.5a.5.5 0 0 1 0 1H1.707l1.147 1.146a.5.5 0 0 1-.708.708zM10 8a.5.5 0 0 1 .5-.5h3.793l-1.147-1.146a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L14.293 8.5H10.5A.5.5 0 0 1 10 8"/>
+        </svg>`;
+        div.appendChild(htmlElement);
+        
+        // Set events
+        div.addEventListener('drag',dragEvent =>
+        {
+            // Avoid last event
+            if (dragEvent.screenX === 0) {
+                return;
+            }
+            
+            const parentNode = dragEvent.target.parentNode;
+            if(parentNode === null)
+                return;
+            
+            // Get children and y position
+            const childElements = parentNode.children;
+            const childrenPositionTupleArray = [];
+            
+            for(let i = 0; i < childElements.length; i++) {
+                childrenPositionTupleArray.push({
+                    element: childElements[i],
+                    yPosition: childElements[i] === dragEvent.target ? dragEvent.y: childElements[i].getBoundingClientRect().top
+                });
+            }
+            
+            // Reorder
+            childrenPositionTupleArray.sort((a,b) => a.yPosition - b.yPosition);
+            for(let i = 0; i < childrenPositionTupleArray.length; i++){
+                console.log(i + " " + childrenPositionTupleArray[i].element.children[1].children[0].value + " " + childrenPositionTupleArray[i].yPosition);
+                parentNode.removeChild(childrenPositionTupleArray[i].element);
+                parentNode.insertBefore(childrenPositionTupleArray[i].element, childElements[i]);
+            }
+        })
+        
+        return div;
+    }
+
     #addContact(contactType = 0, contactValue = "") {
 
         // Generate div
@@ -279,8 +327,8 @@ class EditorHandler {
             option.textContent = element;
             select.append(option);
         });
-        
-        if(isNumeric(contactType) && select.options.length > contactType)
+
+        if (isNumeric(contactType) && select.options.length > contactType)
             select.value = select.options[contactType].value;
 
         // Generate input and button
@@ -293,8 +341,7 @@ class EditorHandler {
 
         // Append elements
         div.append(select, input, button);
-        this.#contactsDiv.append(div);
-
+        this.#contactsDiv.append(this.#encapsulateInDraggable(div));
     }
 
     #addLink(linkName = "", linkValue = "") {
@@ -316,7 +363,7 @@ class EditorHandler {
 
         // Append elements
         div.append(nameInput, linkInput, button);
-        this.#linksDiv.append(div);
+        this.#linksDiv.append(this.#encapsulateInDraggable(div));
 
     }
 
@@ -336,7 +383,7 @@ class EditorHandler {
 
         // Append elements
         div.append(input, button);
-        this.#skillsDiv.append(div);
+        this.#skillsDiv.append(this.#encapsulateInDraggable(div));
 
     }
 
@@ -399,7 +446,7 @@ class EditorHandler {
         div.append(corporationDiv);
         div.append(dateDiv);
         div.append(descriptionInput);
-        this.#worksDiv.append(div);
+        this.#worksDiv.append(this.#encapsulateInDraggable(div));
     }
 
     #addEducation(title = "", date = Date.now()) {
@@ -429,7 +476,7 @@ class EditorHandler {
 
         // Append elements
         div.append(titleLabel, titleInput, button, dateLabel, dateInput);
-        this.#educationsDiv.append(div);
+        this.#educationsDiv.append(this.#encapsulateInDraggable(div));
 
     }
 
@@ -464,7 +511,7 @@ class EditorHandler {
 
         // Append elements
         div.append(input, select, button);
-        this.#languagesDiv.append(div);
+        this.#languagesDiv.append(this.#encapsulateInDraggable(div));
 
     }
 
@@ -511,7 +558,7 @@ class EditorHandler {
         div.append(titleDiv);
         div.append(dateDiv);
         div.append(descriptionInput);
-        this.#projectsDiv.append(div);
+        this.#projectsDiv.append(this.#encapsulateInDraggable(div));
     }
 
     #addHobby(name = "") {
@@ -530,7 +577,7 @@ class EditorHandler {
 
         // Append elements
         div.append(nameInput, button);
-        this.#hobbiesDiv.append(div);
+        this.#hobbiesDiv.append(this.#encapsulateInDraggable(div));
 
     }
 }

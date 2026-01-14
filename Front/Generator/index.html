@@ -16,87 +16,110 @@
 
 </HEAD>
 
-<BODY>
+<BODY style="display:none">
 
-<p id="alert"></p>
+<div id="container">
+    
+    <div id="editor">
+        <p id="alert"></p>
+        <div id="form">
 
-<div id="form">
+            <label for="system-language">System language:</label>
+            <select id="system-language">
+                <option value="../Common/Languages/en.json">English</option>
+                <option value="../Common/Languages/fr.json">French</option>
+            </select>
 
-    <label for="system-language">System language:</label>
-    <select id="system-language">
-        <option value="../Common/Languages/en.json">English</option>
-        <option value="../Common/Languages/fr.json">French</option>
-    </select>
+            <label for="photo-input">Photo:</label>
+            <div id="photo">
+                <input type="file" id="photo-input" accept="image/*"/>
+                <img src="" id="photo-reader" alt="photo preview"/>
+            </div>
 
-    <label for="photo-input">Photo:</label>
-    <div id="photo">
-    <input type ="file" id="photo-input" accept="image/*" />
-    <img src="" id ="photo-reader" alt="photo preview"/>
+            <label for="name_input">Name:</label>
+            <input type="text" id="name_input" placeholder="Name" aria-label="Name"/>
+
+            <label for="profession_input">Profession:</label>
+            <input type="text" id="profession_input" placeholder="Profession" aria-label="Profession"/>
+
+            <label for="contacts_input">Contacts:</label>
+            <div id="contacts_input">
+                <div id="contacts"></div>
+                <div class="button-container">
+                    <button id="add-contact">Add contact</button>
+                </div>
+            </div>
+
+            <label for="links_input">Links:</label>
+            <div id="links_input">
+                <div id="links"></div>
+                <div class="button-container">
+                    <button id="add-link">Add links</button>
+                </div>
+            </div>
+
+            <label for="about-me_input">About me:</label>
+            <textarea id="about-me_input"></textarea>
+
+            <label for="skills_input">Skills:</label>
+            <div id="skills_input">
+                <div id="skills"></div>
+                <div class="button-container">
+                    <button id="add-skill">Add skill</button>
+                </div>
+            </div>
+
+            <label for="works_input">Works:</label>
+            <div id="works_input">
+                <div id="works"></div>
+                <div class="button-container">
+                    <button id="add-work">Add work</button>
+                </div>
+            </div>
+
+            <label for="educations_input">Educations:</label>
+            <div id="educations_input">
+                <div id="educations"></div>
+                <div class="button-container">
+                    <button id="add-education">Add education</button>
+                </div>
+            </div>
+
+            <label for="languages_input">Languages:</label>
+            <div id="languages_input">
+                <div id="languages"></div>
+                <div class="button-container">
+                    <button id="add-language">Add language</button>
+                </div>
+            </div>
+
+            <label for="projects_input">Projects:</label>
+            <div id="projects_input">
+                <div id="projects"></div>
+                <div class="button-container">
+                    <button id="add-project">Add project</button>
+                </div>
+            </div>
+
+            <label for="hobbies_input">Hobbies</label>
+            <div id="hobbies_input">
+                <div id="hobbies"></div>
+                <div class="button-container">
+                    <button id="add-hobby">Add hobby</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="buttons">
+            <button id="download_template_button">Download CSS template</button>
+            <button id="save_button">Save</button>
+            <button id="view_button">Print</button>
+        </div>
+
     </div>
     
-    <label for="name_input">Name:</label>
-    <input type="text" id="name_input" placeholder="Name" aria-label="Name"/>
+    <iframe id="preview" src="../Viewer/index.html"></iframe>
 
-    <label for="profession_input">Profession:</label>
-    <input type="text" id="profession_input" placeholder="Profession" aria-label="Profession"/>
-
-    <label for="contacts_input">Contacts:</label>
-    <div id="contacts_input">
-        <div id="contacts"></div>
-        <button id="add-contact">Add contact</button>
-    </div>
-
-    <label for="links_input">Links:</label>
-    <div id="links_input">
-        <div id="links"></div>
-        <button id="add-link">Add links</button>
-    </div>
-
-    <label for="about-me_input">About me:</label>
-    <div>
-        <textarea id="about-me_input" aria-label="About Me"></textarea>
-    </div>
-
-    <label for="skills_input">Skills:</label>
-    <div id="skills_input">
-        <div id="skills"></div>
-        <button id="add-skill">Add skill</button>
-    </div>
-
-    <label for="works_input">Works:</label>
-    <div id="works_input">
-        <div id="works"></div>
-        <button id="add-work">Add work</button>
-    </div>
-
-    <label for="educations_input">Educations:</label>
-    <div id="educations_input">
-        <div id="educations"></div>
-        <button id="add-education">Add education</button>
-    </div>
-
-    <label for="languages_input">Languages:</label>
-    <div id="languages_input">
-        <div id="languages"></div>
-        <button id="add-language">Add language</button>
-    </div>
-
-    <label for="projects_input">Projects:</label>
-    <div id="projects_input">
-        <div id="projects"></div>
-        <button id="add-project">Add project</button>
-    </div>
-
-    <label for="hobbies_input">Hobbies</label>
-    <div id="hobbies_input">
-        <div id="hobbies"></div>
-        <button id="add-hobby">Add hobby</button>
-    </div>
-
-    <div id="buttons">
-        <button id="save_button">Save</button>
-        <button id="view_button">View</button>
-    </div>
 </div>
 
 </BODY>

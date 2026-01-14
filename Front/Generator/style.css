@@ -2,13 +2,37 @@
     text-align: center;
 }
 
+input, textarea {
+    min-width: 100px;
+}
+
+#editor{
+    display: flex;
+    width: 50vw;
+    flex-direction: column;
+    align-items: center;
+}
+
+#preview{
+    position: fixed;
+    width: 49vw;
+    height: 100vh;
+    overflow-y: scroll;
+    top: 0;
+    left: 51vw;
+}
+
 #form {
     display: grid;
-    grid-template-columns: 5% 90%;
-    grid-gap: 15px;
-    justify-content: center;
+    grid-template-columns: auto auto;
+    grid-gap: 30px;
     margin-top: 50px;
     margin-bottom: 50px;
+    width: 50vw;
+}
+
+.button-container{
+    text-align: right;
 }
 
 #photo {
@@ -31,79 +55,106 @@
     z-index: 1000;
 }
 
-.draggableDiv{
+.movable_element{
     display: flex;
     flex-direction: row;
+    align-items: flex-start;
     gap: 10px;
+}
+
+.movable_element button{
+    min-width: 0;
+    width: 35px;
+    height: 35px;
+}
+
+.arrows_div{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 5px;
+}
+
+.contact_item button, .skill_item button, .link_item button, .work_item button, .education_item button, .project_item button, .language_item button, .hobby_item button{
+    min-width: 0;
+    width: 35px;
 }
 
 #contacts, #links, #skills, #works, #educations, #languages, #projects, #hobbies {
     display: flex;
     flex-direction: column;
     gap: 5px;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
 }
 
-.contact_item, .link_item, .education_item, .work_item .title-div, .project_item .title-div{
-    display: grid;
-    grid-template-columns: 100px auto 25px;
-    grid-gap: 5px;
+.contact_item, .link_item{
     width: 100%;
-}
-
-.skill_item, .hobby_item{
     display: grid;
-    grid-template-columns: auto 25px;
-    grid-gap: 5px;
-    width: 100%;
+    grid-template-columns: auto auto 35px;
+    grid-gap: 10px;
 }
 
 #about-me_input {
     width: 100%;
-    height: 200px;
-}
-
-.work_item {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    width: 100%;
-}
-
-.work_item .corporation-div, .project_item .date-div {
-    display: grid;
-    grid-template-columns: 100px auto;
-    grid-gap: 5px;
-}
-
-.work_item .date-div {
-    display: grid;
-    grid-template-columns: 100px auto auto;
-    grid-gap: 5px;
-}
-
-.work_item textarea {
-    height: 200px;
-}
-
-.language_item {
-    display: grid;
-    grid-template-columns: auto 100px 25px;
-    grid-gap: 5px;
-}
-
-.project_item {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.project_item textarea {
     height: 100px;
 }
 
+.work_item, .project_item{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 150px auto;
+    grid-gap: 10px;
+}
+
+.skill_item, .hobby_item{
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 35px;
+    grid-gap: 10px;
+}
+
+.work_item .title-content-div, .project_item .title-content-div{
+    display: grid;
+    grid-template-columns: auto 35px;
+    grid-gap: 10px;
+}
+
+.work_item textarea, .project_item textarea{
+    grid-column: 1/3;
+    height: 100px;
+}
+
+.work_item .date-content-div{
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-gap: 10px;
+}
+
+.education_item{
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 150px 35px;
+    grid-gap: 10px;
+}
+
+.language_item {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 100px 35px;
+    grid-gap: 5px;
+}
+
 #buttons {
+    position : fixed;
+    left: 0;
+    bottom : 0;
+    width: 49vw;
+    z-index: 1000;
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-bottom: 10px;
+    padding-right: 10px;
 }

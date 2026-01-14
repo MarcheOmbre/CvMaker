@@ -78,6 +78,16 @@ const hobbiesDiv = document.getElementById("hobbies");
 const alertElement = document.getElementById("alert");
 const frame = document.getElementById("preview");
 
+const encapsulationArrowTemplate = document.getElementById("encapsulation-arrow_template");
+const contactItemTemplate = document.getElementById("contact-item_template");
+const linkItemTemplate = document.getElementById("link-item_template");
+const skillItemTemplate = document.getElementById("skill-item_template");
+const workItemTemplate = document.getElementById("work-item_template");
+const educationItemTemplate = document.getElementById("education-item_template");
+const languageItemTemplate = document.getElementById("language-item_template");
+const projectItemTemplate = document.getElementById("project-item_template");
+const hobbyItemTemplate = document.getElementById("hobby-item_template");
+
 
 async function importFromJson(dataJson) {
 
@@ -208,7 +218,7 @@ async function generateJson() {
         const corporation = children[3].value;
         const fromDate = children[5].children[0].value;
         const toDate = children[5].children[1].value;
-        const description = children[6].value;
+        const description = children[7].value;
         contentObject.WorkBlocs.push(new WorkBloc(name, corporation, fromDate, toDate, description));
     });
 
@@ -281,64 +291,41 @@ function refreshElementsArrows(movableElementsParent) {
 
 function encapsulateInMovable(htmlElement) {
 
-    // Create arrow buttons
-    const topArrow = document.createElement("button");
-    topArrow.className = "top-arrow";
-    topArrow.innerHTML = "&#8593;";
-    const bottomArrow = document.createElement("button");
-    bottomArrow.className = "bottom-arrow";
-    bottomArrow.innerHTML = "&#8595;";
-    const arrowsDiv = document.createElement("div");
-    arrowsDiv.className = "arrows_div";
-    arrowsDiv.append(topArrow, bottomArrow);
-
-    const div = document.createElement("div");
-    div.className = "movable_element";
-    div.append(arrowsDiv, htmlElement);
-
-    topArrow.addEventListener('click', _ => {
-        const divParent = div.parentNode;
-        divParent.insertBefore(div, div.previousElementSibling);
-        refreshElementsArrows(div.parentElement);
+    // Generate from the template
+    const template = document.importNode(encapsulationArrowTemplate.content, true).children[0];
+    template.append(htmlElement);
+    template.children[0].children[0].addEventListener('click', _ => {
+        const divParent = template.parentNode;
+        divParent.insertBefore(template, template.previousElementSibling);
+        refreshElementsArrows(template.parentElement);
+    });
+    template.children[0].children[1].addEventListener('click', _ => {
+        const divParent = template.parentNode;
+        divParent.insertBefore(template, template.nextElementSibling.nextElementSibling);
+        refreshElementsArrows(template.parentElement);
     });
 
-    bottomArrow.addEventListener('click', _ => {
-        const divParent = div.parentNode;
-        divParent.insertBefore(div, div.nextElementSibling.nextElementSibling);
-        refreshElementsArrows(div.parentElement);
-    });
-
-    return div;
+    return template;
 }
 
 function addContact(contactType = 0, contactValue = "") {
 
-    // Generate div
-    const div = document.createElement("div");
-    div.classList.add("contact_item");
+    const template = document.importNode(contactItemTemplate.content, true).children[0];
+    const children = template.children;
 
-    // Generate select
-    const select = document.createElement("select");
     systemJson.ContactTypes.forEach(element => {
         const option = document.createElement("option");
         option.textContent = element;
-        select.append(option);
+        children[0].append(option);
     });
+    
+    if (isNumeric(contactType) && contactType <= children[0].options.length)
+        children[0].selectedIndex = contactType;
 
-    if (isNumeric(contactType) && select.options.length > contactType) select.value = select.options[contactType].value;
-
-    // Generate input and button
-    const input = document.createElement("input");
-    input.type = "text";
-    input.value = contactValue;
-    const button = document.createElement("button");
-    button.textContent = "-";
-
-    // Append elements
-    div.append(select, input, button);
-
-    const encapsulated = encapsulateInMovable(div);
-    button.onclick = _ => encapsulated.remove();
+    children[1].value = contactValue;
+   
+    const encapsulated = encapsulateInMovable(template);
+    children[2].onclick = _ => encapsulated.remove();
 
     contactsDiv.append(encapsulated);
     refreshElementsArrows(contactsDiv);
@@ -346,25 +333,13 @@ function addContact(contactType = 0, contactValue = "") {
 
 function addLink(linkName = "", linkValue = "") {
 
-    // Generate div
-    const div = document.createElement("div");
-    div.classList.add("link_item");
+    const template = document.importNode(linkItemTemplate.content, true).children[0];
+    const children = template.children;
+    children[0].value = linkName;
+    children[1].value = linkValue;
 
-    // Generate input and button
-    const nameInput = document.createElement("input");
-    nameInput.type = "text";
-    nameInput.value = linkName;
-    const linkInput = document.createElement("input");
-    linkInput.type = "text";
-    linkInput.value = linkValue;
-    const button = document.createElement("button");
-    button.textContent = "-";
-
-    // Append elements
-    div.append(nameInput, linkInput, button);
-
-    const encapsulated = encapsulateInMovable(div);
-    button.onclick = _ => encapsulated.remove();
+    const encapsulated = encapsulateInMovable(template);
+    children[2].onclick = _ => encapsulated.remove();
 
     linksDiv.append(encapsulated);
     refreshElementsArrows(linksDiv);
@@ -372,89 +347,31 @@ function addLink(linkName = "", linkValue = "") {
 
 function addSkill(skillName = "") {
 
-    // Generate div
-    const div = document.createElement("div");
-    div.classList.add("skill_item");
-
-    // Generate input and button
-    const input = document.createElement("input");
-    input.type = "text";
-    input.value = skillName;
-    const button = document.createElement("button");
-    button.textContent = "-";
-
-    // Append elements
-    div.append(input, button);
-
-    const encapsulated = encapsulateInMovable(div);
-    button.onclick = _ => encapsulated.remove();
+    const template = document.importNode(skillItemTemplate.content, true).children[0];
+    const children = template.children;
+    children[0].value = skillName;
+   
+    const encapsulated = encapsulateInMovable(template);
+    children[1].onclick = _ => encapsulated.remove();
 
     skillsDiv.append(encapsulated);
     refreshElementsArrows(skillsDiv);
 }
 
 function addWork(title = "", corporation = "", fromDate = Date.now(), toDate = Date.now(), description = "") {
-
-    // Generate div
-    const div = document.createElement("div");
-    div.classList.add("work_item");
-
-    // Title
-    const titleLabel = document.createElement("label");
-    titleLabel.textContent = "Title : ";
-    titleLabel.htmlFor = "work-title-value";
-    const titleInput = document.createElement("input");
-    titleInput.type = "text";
-    titleInput.name = "work-title-value";
-    titleInput.value = title;
-    const button = document.createElement("button");
-    button.textContent = "-";
-    const titleContent = document.createElement("div");
-    titleContent.classList.add("title-content-div");
-    titleContent.append(titleInput, button);
-
-
-    // Corporation
-    const corporationLabel = document.createElement("label");
-    corporationLabel.textContent = "Corporation : ";
-    corporationLabel.htmlFor = "work-corporation-value";
-    const corporationInput = document.createElement("input");
-    corporationInput.type = "text";
-    corporationInput.classList.add("work-corporation-value");
-    corporationInput.value = corporation;
-
-    // Date
-    const dateLabel = document.createElement("label");
-    dateLabel.textContent = "Date : ";
-    dateLabel.htmlFor = "work-from-date-value";
-    const fromDateInput = document.createElement("input");
-    fromDateInput.type = "date";
-    fromDateInput.name = "work-from-date-value";
-    fromDateInput.value = fromDate.toString();
-    const toDateInput = document.createElement("input");
-    toDateInput.type = "date";
-    toDateInput.value = toDate.toString();
-    const dateContent = document.createElement("div");
-    dateContent.classList.add("date-content-div");
-    dateContent.append(fromDateInput, toDateInput);
-
-    // Description
-    const index = worksDiv.children.length;
-    const descriptionInput = document.createElement("textarea");
-    descriptionInput.id = "work-description-value-" + index;
-    descriptionInput.value = description;
-
-    // Append elements
-    div.append(titleLabel);
-    div.append(titleContent);
-    div.append(corporationLabel);
-    div.append(corporationInput);
-    div.append(dateLabel);
-    div.append(dateContent);
-    div.append(descriptionInput);
-
-    const encapsulated = encapsulateInMovable(div);
-    button.onclick = _ => encapsulated.remove();
+    
+    //Generate from the template
+    const templateClone = document.importNode(workItemTemplate.content, true).children[0];
+    const children = templateClone.children;
+    children[1].children[0].value = title;
+    children[3].value = corporation;
+    children[5].children[0].value = fromDate.toString();
+    children[5].children[1].value = toDate.toString();
+    children[7].value = description;
+    worksDiv.append(templateClone);
+    
+    const encapsulated = encapsulateInMovable(templateClone);
+    children[1].onclick = _ => encapsulated.remove();
 
     worksDiv.append(encapsulated);
     refreshElementsArrows(worksDiv);
@@ -462,29 +379,13 @@ function addWork(title = "", corporation = "", fromDate = Date.now(), toDate = D
 
 function addEducation(title = "", date = Date.now()) {
 
-    // Generate div
-    const div = document.createElement("div");
-    div.classList.add("education_item");
+    const templateClone = document.importNode(educationItemTemplate.content, true).children[0];
+    const children = templateClone.children;
+    children[0].value = title;
+    children[1].value = date.toString();
 
-    // Title
-    const titleInput = document.createElement("input");
-    titleInput.type = "text";
-    titleInput.value = title;
-
-    // Date
-    const dateInput = document.createElement("input");
-    dateInput.type = "date";
-    dateInput.value = date.toString();
-
-    // Button
-    const button = document.createElement("button");
-    button.textContent = "-";
-
-    // Append elements
-    div.append(titleInput, dateInput, button);
-
-    const encapsulated = encapsulateInMovable(div);
-    button.onclick = _ => encapsulated.remove();
+    const encapsulated = encapsulateInMovable(templateClone);
+    children[2].onclick = _ => encapsulated.remove();
 
     educationsDiv.append(encapsulated);
     refreshElementsArrows(educationsDiv);
@@ -492,35 +393,22 @@ function addEducation(title = "", date = Date.now()) {
 
 function addLanguage(level = 0, name = "") {
 
-    // Generate div
-    const div = document.createElement("div");
-    div.classList.add("language_item");
+    const templateClone = document.importNode(languageItemTemplate.content, true).children[0];
+    const children = templateClone.children;
+    children[0].value = name;
 
-    // Generate input
-    const input = document.createElement("input");
-    input.type = "text";
-    input.value = name;
-
-    // Generate select
-    const select = document.createElement("select");
     systemJson.LanguageLevels.forEach(element => {
 
         const option = document.createElement("option");
         option.textContent = element;
-        select.append(option);
+        children[1].append(option);
     });
 
-    if (isNumeric(level) && select.options.length > level) select.selectedIndex = level;
+    if (isNumeric(level) && level <= children[1].options.length)
+        children[1].selectedIndex = level;
 
-    // Generate button
-    const button = document.createElement("button");
-    button.textContent = "-";
-
-    // Append elements
-    div.append(input, select, button);
-
-    const encapsulated = encapsulateInMovable(div);
-    button.onclick = _ => encapsulated.remove();
+    const encapsulated = encapsulateInMovable(templateClone);
+    children[2].onclick = _ => encapsulated.remove();
 
     languagesDiv.append(encapsulated);
     refreshElementsArrows(languagesDiv);
@@ -528,46 +416,14 @@ function addLanguage(level = 0, name = "") {
 
 function addProject(title = "", date = Date.now(), description = "") {
 
-    // Generate div
-    const div = document.createElement("div");
-    div.classList.add("work_item");
+    const templateClone = document.importNode(projectItemTemplate.content, true).children[0];
+    const children = templateClone.children;
+    children[1].children[0].value = title;
+    children[3].value = date.toString();
+    children[4].value = description;
 
-    // Title
-    const titleLabel = document.createElement("label");
-    titleLabel.textContent = "Title : ";
-    titleLabel.htmlFor = "project-title-Value";
-    const titleInput = document.createElement("input");
-    titleInput.type = "text";
-    titleInput.name = "project-title-Value";
-    titleInput.value = title;
-    const button = document.createElement("button");
-    button.textContent = "-";
-    const titleContent = document.createElement("div");
-    titleContent.classList.add("title-content-div");
-    titleContent.append(titleInput, button);
-
-    // Date
-    const dateLabel = document.createElement("label");
-    dateLabel.textContent = "Date : ";
-    dateLabel.htmlFor = "project-date-value";
-    const dateInput = document.createElement("input");
-    dateInput.type = "date";
-    dateInput.name = "project-date-value";
-    dateInput.value = date.toString();
-
-    // Description
-    const index = projectsDiv.children.length;
-    const descriptionInput = document.createElement("textarea");
-    descriptionInput.id = "project-description-value-" + index;
-    descriptionInput.value = description;
-
-    // Append elements
-    div.append(titleLabel, titleContent);
-    div.append(dateLabel, dateInput);
-    div.append(descriptionInput);
-
-    const encapsulated = encapsulateInMovable(div);
-    button.onclick = _ => encapsulated.remove();
+    const encapsulated = encapsulateInMovable(templateClone);
+    children[1].children[1].onclick = _ => encapsulated.remove();
 
     projectsDiv.append(encapsulated);
     refreshElementsArrows(projectsDiv);
@@ -575,22 +431,12 @@ function addProject(title = "", date = Date.now(), description = "") {
 
 function addHobby(name = "") {
 
-    // Generate div
-    const div = document.createElement("div");
-    div.classList.add("hobby_item");
+    const templateClone = document.importNode(hobbyItemTemplate.content, true).children[0];
+    const children = templateClone.children;
+    children[0].value = name;
 
-    // Generate input and button
-    const nameInput = document.createElement("input");
-    nameInput.type = "text";
-    nameInput.value = name;
-    const button = document.createElement("button");
-    button.textContent = "-";
-
-    // Append elements
-    div.append(nameInput, button);
-
-    const encapsulated = encapsulateInMovable(div);
-    button.onclick = _ => encapsulated.remove();
+    const encapsulated = encapsulateInMovable(templateClone);
+    children[1].onclick = _ => encapsulated.remove();
 
     hobbiesDiv.append(encapsulated);
     refreshElementsArrows(hobbiesDiv);
@@ -645,13 +491,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             })
         }
 
-        document.getElementById("view_button").onclick = _ => {
-            generateJson().then(json => {
-                sessionStorage.setItem(CvDataItemKey, JSON.stringify(json));
-                location.assign("../Viewer/index.html");
-            });
-        }
-
         systemLanguageSelect.onchange = event => {
             let index = 0;
 
@@ -678,6 +517,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         SendRequest("GET", document.cookie, parameters, APILink + `Cv/Get`, null, res => {
             const file = JSON.parse(res.responseText);
             importFromJson(file);
+            frame.contentWindow.generateFromJson(file);
         }, res => alertElement.textContent = res.responseText);
     }
 )

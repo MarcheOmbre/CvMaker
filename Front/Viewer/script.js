@@ -1,86 +1,146 @@
-﻿function fillSection(sectionTitle, title, fillSection) {
+﻿const printButton = document.getElementById("print_button");
 
-    const section = document.getElementById(sectionTitle);
+const nameEntry = document.getElementById("header_name");
+const professionEntry = document.getElementById("header_profession");
+const imageEntry = document.getElementById("header_photo");
+const aboutMeSection = document.getElementById("about-me");
+const contactsSection = document.getElementById("header_contacts_list");
+const linksSection = document.getElementById("header_links_list");
+const skillsSection = document.getElementById("skills");
+const worksSection = document.getElementById("work");
+const educationSection = document.getElementById("education");
+const languagesSection = document.getElementById("languages");
+const projectsSection = document.getElementById("projects");
+const hobbiesSection = document.getElementById("hobbies");
+
+const contactItemTemplate = document.getElementById("contact-item_template");
+const linkItemTemplate = document.getElementById("link-item_template");
+const skillItemTemplate = document.getElementById("skill-item_template");
+const workItemTemplate = document.getElementById("work-item_template");
+const educationItemTemplate = document.getElementById("education-item_template");
+const languageItemTemplate = document.getElementById("language-item_template");
+const projectItemTemplate = document.getElementById("project-item_template");
+const hobbyItemTemplate = document.getElementById("hobby-item_template");
+
+
+function fillSection(section, title, fillSection) {
+    if (!section)
+        return;
 
     section.getElementsByClassName("title-parent")[0].getElementsByClassName("title")[0].textContent = title;
     fillSection(section.getElementsByClassName("content")[0]);
 }
 
-function generateSettings() {
-
-    document.documentElement.lang = "en";
-    document.title = "My CV";
-
+function refreshLanguage(language) {
+    if (isString(language))
+        document.documentElement.lang = language;
 }
 
-function generateCvHeader(dataJson) {
+function refreshTitle(title) {
+    if (isString(title))
+        document.title = title;
+}
 
-    if(!dataJson || !dataJson.content)
+function refreshName(name) {
+    if (isString(name))
+        nameEntry.textContent = name;
+}
+
+function refreshProfession(profession) {
+    if (isString(profession))
+        professionEntry.textContent = profession;
+}
+
+function refreshImage(image) {
+    if (isString(image))
+        imageEntry.src = image;
+}
+
+function refreshContacts(contacts) {
+
+    if (!contacts || !Array.isArray(contacts))
         return;
-    
-    document.getElementById("header_name").textContent = dataJson.content.Name;
-    document.getElementById("header_profession").textContent = dataJson.content.Profession;
 
-    if (isString(dataJson.image) && dataJson.image.length > 0) {
-        document.getElementById("header_photo").src = dataJson.image;
+    for(const child of contactsSection.children){
+        console.log(child);
+        child.remove();   
     }
 
+    contacts.forEach(element => {
 
-    // Generate contacts
-    const contactsDivision = document.getElementById("header_contacts_list");
-    dataJson.content.Contacts.forEach(element => {
-        const li = document.createElement("li");
-        li.classList.add("header_contacts_item");
-        li.textContent = `${element.value}`;
-        contactsDivision.appendChild(li);
+        if (!isString(element.value))
+            return;
+
+        const templateClone = document.importNode(contactItemTemplate.content, true).children[0];
+        templateClone.textContent = element.value;
+        contactsSection.appendChild(templateClone);
     });
-
-    // Generate links
-    const linksDivision = document.getElementById("header_links_list");
-    dataJson.content.Links.forEach((element) => {
-        const li = document.createElement("li");
-        li.classList.add("header_links_item");
-        li.textContent = element.name + ": " + element.value;
-        linksDivision.appendChild(li);
-    });
-
 }
 
-function generateCvAboutMe(systemJson, dataJson) 
-{
-    if(!systemJson || !dataJson)
+function refreshLinks(links) {
+
+    if (!links || !Array.isArray(links))
         return;
     
-    fillSection("about-me", systemJson.AboutMeTitle, content =>{
+    for(const child of contactsSection.children)
+        child.remove();
+
+    links.forEach(element => {
+
+        if (!isString(element.name) || !isString(element.value))
+            return;
+
+        const templateClone = document.importNode(linkItemTemplate.content, true).children[0];
+        templateClone.textContent = element.name + ": " + element.value;
+        linksSection.appendChild(templateClone);
+    });
+}
+
+function refreshAboutMe(title, text) {
+    if (!isString(title) || !isString(text))
+        return;
+
+    fillSection(aboutMeSection, title, content => {
 
         const textBloc = document.createElement("p");
-        textBloc.textContent = dataJson.content.AboutMe;
+        textBloc.textContent = text;
         content.appendChild(textBloc);
     });
 }
 
-function generateCvSkills(systemJson, dataJson) 
-{
-    if(!systemJson || !dataJson)
+function refreshSkills(title, skills) {
+    if (!isString(title) || !skills || !Array.isArray(skills))
         return;
 
-    fillSection("skills", systemJson.SkillsTitle, content =>
-        dataJson.content.Skills.forEach(element => {
-            const li = document.createElement("li");
-            li.classList.add("skills_item");
-            li.textContent = element;
-            content.appendChild(li);
+    for(const child of skillsSection.children[1].children)
+        child.remove();
+
+    console.log(skills);
+    fillSection(skillsSection, title, content =>
+        skills.forEach(element => {
+
+            if (!isString(element))
+                return;
+
+            const templateClone = document.importNode(skillItemTemplate.content, true).children[0];
+            templateClone.textContent = element;
+            content.appendChild(templateClone);
         }));
 
 }
 
-function generateCvWork(systemJson, dataJson)  
-{
-    if(!systemJson || !dataJson)
+function refreshWorks(title, works) {
+    if (!isString(title) || !works || !Array.isArray(works))
         return;
 
-    this.fillSection("work", systemJson.WorkTitle, content => {
-        dataJson.content.WorkBlocs.forEach(element => {
+    for(const child of worksSection.children[1].children)
+        child.remove();
+
+    this.fillSection(worksSection, title, content => {
+        works.forEach(element => {
+
+            if (!isString(element.name) || !isString(element.corporation) || !isString(element.description))
+                return;
 
             // Format date
             const fromDate = new Date(element.fromDate);
@@ -88,145 +148,124 @@ function generateCvWork(systemJson, dataJson)
 
             // Format month to force xx/yyyy format
             let month = (fromDate.getMonth() + 1).toString();
-            if(month.length === 1)
+            if (month.length === 1)
                 month = "0" + month;
 
             let stringDate = isDate(fromDate) ? `${month}/${fromDate.getFullYear()}` : "";
-            if(isDate(toDate)){
-                if(stringDate !== "")
+            if (isDate(toDate)) {
+                if (stringDate !== "")
                     stringDate += " - ";
 
                 // Format month to force xx/yyyy format
                 month = (toDate.getMonth() + 1).toString();
-                if(month.length === 1)
+                if (month.length === 1)
                     month = "0" + month;
 
                 stringDate += `${month}/${toDate.getFullYear()}`;
             }
 
-            const workBlockTitle = document.createElement("h4");
-            workBlockTitle.classList.add("work_bloc_title");
-            workBlockTitle.textContent = element.name;
+            const templateClone = document.importNode(workItemTemplate.content, true).children[0];
+            const children = templateClone.children;
+            children[0].children[0].textContent = element.name;
+            children[0].children[1].textContent = element.corporation;
+            children[0].children[2].textContent = stringDate;
+            children[1].textContent = element.description;
 
-            const workBlockCorporation = document.createElement("p");
-            workBlockCorporation.classList.add("work_bloc_corporation");
-            workBlockCorporation.textContent = element.corporation;
-
-            const workBlockDate = document.createElement("p");
-            workBlockDate.classList.add("work_bloc_date");
-            workBlockDate.textContent = stringDate;
-
-
-            const workBlockHeader = document.createElement("div");
-            workBlockHeader.classList.add("work_bloc_header");
-            workBlockHeader.appendChild(workBlockTitle);
-            workBlockHeader.appendChild(workBlockCorporation);
-            workBlockHeader.appendChild(workBlockDate);
-
-            const workBlockDescription = document.createElement("p");
-            workBlockDescription.classList.add("work_bloc_description");
-            workBlockDescription.textContent = element.description;
-
-            const div = document.createElement("div");
-            div.classList.add("work_item");
-            div.appendChild(workBlockHeader);
-            div.appendChild(workBlockDescription);
-
-            content.appendChild(div);
+            content.appendChild(templateClone);
         })
     });
 
 }
 
-function generateCvEducation(systemJson, dataJson) 
-{
-    if(!systemJson || !dataJson)
+function refreshEducations(title, educations) {
+    if (!isString(title) || !educations || !Array.isArray(educations))
         return;
 
-    fillSection("education", systemJson.EducationTitle, content => {
-        dataJson.content.EducationBlocs.forEach(element => {
+    for(const child of educationSection.children[1].children)
+        child.remove();
 
-            const educationBlocTitle = document.createElement("h4");
-            educationBlocTitle.classList.add("education_bloc_title");
-            educationBlocTitle.textContent = element.name;
+    fillSection(educationSection, title, content => {
+        educations.forEach(element => {
 
-            const educationBlocDate = document.createElement("p");
-            educationBlocDate.classList.add("education_bloc_date");
-            educationBlocDate.textContent = isString(element.date) ? new Date(element.date).getFullYear() : "";
+            if (!isString(element.name))
+                return;
 
-            const div = document.createElement("div");
-            div.classList.add("education_item");
-            div.appendChild(educationBlocTitle);
-            div.appendChild(educationBlocDate);
+            const templateClone = document.importNode(educationItemTemplate.content, true).children[0];
+            const children = templateClone.children;
+            children[0].textContent = element.name;
+            children[1].textContent = isString(element.date) ? new Date(element.date).getFullYear() : "";
 
-            content.appendChild(div);
+            content.appendChild(templateClone);
         })
     });
 
 }
 
-function generateCvLanguage(systemJson, dataJson)
-{
-    if(!systemJson || !dataJson)
+function refreshLanguages(title, languages, languageLevels) {
+    if (!isString(title) || !languages || !Array.isArray(languages) || !languageLevels || !Array.isArray(languageLevels))
         return;
+
+    for(const child of languagesSection.children[1].children)
+        child.remove();
     
-    fillSection("languages", systemJson.LanguagesTitle, content => {
-        dataJson.content.Languages.forEach(element => {
-            const li = document.createElement("li");
-            li.classList.add("languages_item");
-            li.textContent = `${element.name} (${systemJson.LanguageLevels[element.level]})`;
-            content.appendChild(li);
+    fillSection(languagesSection, title, content => {
+        languages.forEach(element => {
+
+            if (!isString(element.name) || !isNumeric(element.level) || element >= languageLevels.length)
+                return;
+
+            const templateClone = document.importNode(languageItemTemplate.content, true).children[0];
+            templateClone.textContent = `${element.name} (${languageLevels[element.level]})`;
+
+            content.appendChild(templateClone);
         })
     });
 
 }
 
-function generateCvProjects(systemJson, dataJson) {
-    
-    if(!systemJson || !dataJson)
+function refreshProjects(title, projects) {
+
+    if (!isString(title) || !projects || !Array.isArray(projects))
         return;
-    
-    fillSection("projects", systemJson.ProjectsTitle, content => {
-        dataJson.content.Projects.forEach(element => {
 
-            const projectBlockTitle = document.createElement("h4");
-            projectBlockTitle.classList.add("project_bloc_title");
-            projectBlockTitle.textContent = element.name;
+    for(const child of projectsSection.children[1].children)
+        child.remove();
 
-            const projectBlockDate = document.createElement("p");
-            projectBlockDate.classList.add("project_bloc_date");
-            projectBlockDate.textContent = isString(element.date) ? new Date(element.date).getFullYear() : "";
+    fillSection(projectsSection, title, content => {
+        projects.forEach(element => {
 
-            const projectHeader = document.createElement("div");
-            projectHeader.classList.add("project_bloc_header");
-            projectHeader.appendChild(projectBlockTitle);
-            projectHeader.appendChild(projectBlockDate);
+            if (!isString(element.name) || !isString(element.description))
+                return;
 
-            const projectBlockDescription = document.createElement("p");
-            projectBlockDescription.classList.add("project_bloc_description");
-            projectBlockDescription.textContent = element.description;
-
-            const div = document.createElement("div");
-            div.classList.add("project_item");
-            div.appendChild(projectHeader);
-            div.appendChild(projectBlockDescription);
-
-            content.appendChild(div);
+            const templateClone = document.importNode(projectItemTemplate.content, true).children[0];
+            const children = templateClone.children;
+            children[0].children[0].textContent = element.name;
+            children[0].children[1].textContent = isString(element.date) ? new Date(element.date).getFullYear() : "";
+            children[1].textContent = element.description;
+            
+            content.appendChild(templateClone);
         })
     });
 
 }
 
-function generateCvHobbies(systemJson, dataJson) {
+function refreshHobbies(title, hobbies) {
 
-    if(!systemJson || !dataJson)
+    if (!isString(title) || !hobbies || !Array.isArray(hobbies))
         return;
-    
-    fillSection("hobbies", systemJson.HobbiesTitle, content => {
-        dataJson.content.Hobbies.forEach(element => {
-            const li = document.createElement("li");
-            li.textContent = element;
-            content.appendChild(li);
+
+    for(const child of hobbiesSection.children[1].children)
+        child.remove();
+
+    fillSection(hobbiesSection, title, content => {
+        hobbies.forEach(element => {
+
+            if (!isString(element))
+                return;
+
+            const templateClone = document.importNode(hobbyItemTemplate.content, true).children[0];
+            templateClone.textContent = element;
+            content.appendChild(templateClone);
         })
     });
 
@@ -234,31 +273,37 @@ function generateCvHobbies(systemJson, dataJson) {
 
 function generateFromJson(dataJson) {
 
-    if(!dataJson || !dataJson.content)
-        return;
-    
-    fetch(dataJson.content.SystemLanguage).then(response =>
-    {
-        const systemJson = response.json();
+    if (!dataJson || !isString(dataJson.content))
+        return
 
-        const dataObject = {};
-        dataObject.image = dataJson.image;
-        dataObject.content = JSON.parse(dataJson.content);
-        
-        generateSettings();
-        generateCvHeader(dataObject);
-        generateCvAboutMe(systemJson, dataObject);
-        generateCvSkills(systemJson, dataObject);
-        generateCvWork(systemJson, dataObject);
-        generateCvEducation(systemJson, dataObject);
-        generateCvLanguage(systemJson, dataObject);
-        generateCvProjects(systemJson, dataObject);
-        generateCvHobbies(systemJson, dataObject);
+    const dataObject = {};
+    dataObject.image = dataJson.image;
+    dataObject.content = JSON.parse(dataJson.content);
+
+    fetch(dataObject.content.SystemLanguage).then(response => {
+        response.json().then(systemJson => {
+            refreshLanguage(systemJson.key);
+            refreshTitle(dataObject.Name);
+            refreshName(dataObject.content.Name);
+            refreshAboutMe(systemJson.AboutMeTitle, dataObject.content.AboutMe);
+            refreshProfession(dataObject.content.Profession);
+            refreshImage(dataObject.image);
+            refreshContacts(dataObject.content.Contacts);
+            refreshLinks(dataObject.content.Links);
+            refreshSkills(systemJson.SkillsTitle, dataObject.content.Skills);
+            refreshWorks(systemJson.WorkTitle, dataObject.content.WorkBlocs);
+            refreshEducations(systemJson.EducationTitle, dataObject.content.EducationBlocs);
+            refreshLanguages(systemJson.LanguagesTitle, dataObject.content.Languages, systemJson.LanguageLevels);
+            refreshProjects(systemJson.ProjectsTitle, dataObject.content.Projects);
+            refreshHobbies(systemJson.HobbiesTitle, dataObject.content.Hobbies);
+        })
     });
 }
 
-
-document.addEventListener("DOMContentLoaded", async function () 
-{
-    generateFromJson(JSON.parse(sessionStorage.getItem(CvDataItemKey)));
-})
+document.addEventListener("DOMContentLoaded", () => {
+    printButton.onclick = _ => {
+        printButton.style.display = "none";
+        this.print();
+        printButton.style.display = "block";
+    }
+});

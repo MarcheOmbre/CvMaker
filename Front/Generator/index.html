@@ -19,7 +19,7 @@
 <BODY style="display:none">
 
 <div id="container">
-    
+
     <div id="editor">
         <p id="alert"></p>
         <div id="form">
@@ -113,11 +113,10 @@
         <div id="buttons">
             <button id="download_template_button">Download CSS template</button>
             <button id="save_button">Save</button>
-            <button id="view_button">Print</button>
         </div>
 
     </div>
-    
+
     <iframe id="preview" src="../Viewer/index.html"></iframe>
 
 </div>
@@ -125,5 +124,92 @@
 </BODY>
 
 </HTML>
+
+<template id="encapsulation-arrow_template">
+    <div class="movable_element">
+        <div class="arrows_div">
+            <button class="top-arrow">&#8593</button>
+            <button class="bottom-arrow">&#8595</button>
+        </div>
+    </div>
+</template>
+
+<template id="contact-item_template">
+    <div class="contact-item">
+        <select></select>
+        <input type="text" placeholder="contact" aria-label="contact"/>
+        <button>-</button>
+    </div>
+</template>
+
+<template id="link-item_template">
+    <div class="link-item">
+        <input type="text" placeholder="name" aria-label="name"/>
+        <input type="text" placeholder="link" aria-label="link"/>
+        <button>-</button>
+    </div>
+</template>
+
+<template id="skill-item_template">
+    <div class="skill-item">
+        <input type="text" placeholder="skill" aria-label="skill"/>
+        <button>-</button>
+    </div>
+</template>
+
+<template id="work-item_template">
+    <div class="work-item">
+        <label>Name:</label>
+        <div class="title-content_div">
+            <input type="text" name="work-title_input" placeholder="title" aria-label="title"/>
+            <button>-</button>
+        </div>
+        <label>Corporation:</label>
+        <input type="text" name="work-corporation_input" placeholder="corporation" aria-label="corporation"/>
+        <label>Date:</label>
+        <div class="date-content_div">
+            <input type="date" name="work-from-date_input"/>
+            <input type="date" name="work-to-date_input"/>
+        </div>
+        <label>Description:</label>
+        <textarea name="work-description_input"></textarea>
+    </div>
+</template>
+
+<template id="education-item_template">
+    <div class="education-item">
+        <input type="text" placeholder="title" aria-label="title"/>
+        <input type="date" placeholder="date" aria-label="date"/>
+        <button>-</button>
+    </div>
+</template>
+
+<template id="language-item_template">
+    <div class="language-item">
+        <input type="text" placeholder="language" aria-label="language"/>
+        <select></select>
+        <button>-</button>
+    </div>
+</template>
+
+<template id="project-item_template">
+    <div class="project-item">
+        <label>Name:</label>
+        <div class="title-content_div">
+            <input type="text" placeholder="title" aria-label="title"/>
+            <button>-</button>
+        </div>
+        <label>Date:</label>
+        <input type="date" placeholder="date" aria-label="date"/>
+        <textarea placeholder="description"></textarea>
+    </div>
+</template>
+
+<template id="hobby-item_template">
+    <div class="hobby-item">
+        <input type="text" placeholder="hobby" aria-label="hobby"/>
+        <button>-</button>
+    </div>
+</template>
 
 <!DOCTYPE html>

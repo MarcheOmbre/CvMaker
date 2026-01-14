@@ -75,7 +75,7 @@ input, textarea {
     gap: 5px;
 }
 
-.contact_item button, .skill_item button, .link_item button, .work_item button, .education_item button, .project_item button, .language_item button, .hobby_item button{
+.contact-item button, .skill-item button, .link-item button, .work-item button, .education-item button, .project-item button, .language-item button, .hobby-item button{
     min-width: 0;
     width: 35px;
 }
@@ -83,12 +83,12 @@ input, textarea {
 #contacts, #links, #skills, #works, #educations, #languages, #projects, #hobbies {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 10px;
     margin-bottom: 10px;
     padding-bottom: 10px;
 }
 
-.contact_item, .link_item{
+.contact-item, .link-item{
     width: 100%;
     display: grid;
     grid-template-columns: auto auto 35px;
@@ -100,45 +100,45 @@ input, textarea {
     height: 100px;
 }
 
-.work_item, .project_item{
+.work-item, .project-item{
     width: 100%;
     display: grid;
     grid-template-columns: 150px auto;
     grid-gap: 10px;
 }
 
-.skill_item, .hobby_item{
+.skill-item, .hobby-item{
     width: 100%;
     display: grid;
     grid-template-columns: auto 35px;
     grid-gap: 10px;
 }
 
-.work_item .title-content-div, .project_item .title-content-div{
+.work-item .title-content_div, .project-item .title-content_div{
     display: grid;
     grid-template-columns: auto 35px;
     grid-gap: 10px;
 }
 
-.work_item textarea, .project_item textarea{
+.work-item textarea, .project-item textarea{
     grid-column: 1/3;
     height: 100px;
 }
 
-.work_item .date-content-div{
+.work-item .date-content_div{
     display: grid;
     grid-template-columns: auto auto;
     grid-gap: 10px;
 }
 
-.education_item{
+.education-item{
     width: 100%;
     display: grid;
     grid-template-columns: auto 150px 35px;
     grid-gap: 10px;
 }
 
-.language_item {
+.language-item {
     width: 100%;
     display: grid;
     grid-template-columns: auto 100px 35px;

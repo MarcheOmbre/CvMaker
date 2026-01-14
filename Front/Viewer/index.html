@@ -6,10 +6,11 @@
 
     <title></title>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="../Common/style.css">
     <link rel="stylesheet" href="./style.css">
     <script src="../Common/Scripts/Constants.js" type="text/javascript"></script>
     <script src="../Common/Scripts/CheckUtility.js" type="text/javascript"></script>
-    <script type="text/javascript" src="./script.js"></script>
+    <script type="text/javascript" src="./script.js" defer></script>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -93,8 +94,60 @@
 
 </section>
 
+<div id="button_container">
+    <button id="print_button">Print</button>
+</div>
+
 </BODY>
 
 </HTML>
+
+<template id="contact-item_template">
+    <li class="contact-item"></li>
+</template>
+
+<template id="link-item_template">
+    <li class="link-item"></li>
+</template>
+
+<template id="skill-item_template">
+    <li class="skill-item"></li>
+</template>
+
+<template id="work-item_template">
+    <div class="work-item">
+        <div class="work_header">
+            <h4 class="work_title"></h4>
+            <p class="work-corporation"></p>
+            <p class="work_date"></p>
+        </div>
+        <p class="work_description"></p>
+    </div>
+</template>
+
+<template id="education-item_template">
+    <div class="education-item">
+        <h4 class="education_title"></h4>
+        <p class="education_date"></p>
+    </div>
+</template>
+
+<template id="language-item_template">
+    <li class="language-item"></li>
+</template>
+
+<template id="project-item_template">
+    <div class="project-item">
+        <div class="project_header">
+            <h4 class="project_title"></h4>
+            <p class="project_date"></p>
+        </div>
+        <p class="project_description"></p>
+    </div>
+</template>
+
+<template id="hobby-item_template">
+    <li class="hobby-item"></li>
+</template>
 
 <!DOCTYPE html>

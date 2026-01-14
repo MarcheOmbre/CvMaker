@@ -57,7 +57,7 @@ h4 {
 */
 
 /* Inner content */
-li, p, .education_item h4{
+li, p, .education-item h4{
     font-family: "Montserrat", sans-serif;
     font-optical-sizing: auto;
     font-weight: 400;
@@ -67,7 +67,7 @@ li, p, .education_item h4{
 }
 
 /* Separator between horizontal list items, dates... */
-.header_contacts_item + .header_contacts_item, .work_bloc_header p, .education_item .education_bloc_date, .project_header p {
+.header_contacts_item + .header_contacts_item, .work_header p, .education-item .education_bloc_date, .project_header p {
     padding-left: 10px;
     border-left: 1px solid darkgray;
 }
@@ -89,7 +89,7 @@ section .content ul, ul.content{
     padding-left : 20px;
 }
 
-.work_bloc_header, .education_item, .project_header{
+.work_header, .education-item, .project_header{
     display: flex;
     flex-direction: row;
     gap: 15px;
@@ -97,7 +97,7 @@ section .content ul, ul.content{
     align-items: baseline
 }
 
-.work_item + .work_item, .project_item + .project_item {
+.work-item + .work-item, .project-item + .project-item {
     padding-top: 5px;
 }
 
@@ -151,7 +151,7 @@ section .content ul, ul.content{
     margin-bottom: 10px;
 }
 
-.header_links_item{
+.link-item{
     padding: 2px;
     background-color: #ecf3ff;
 }

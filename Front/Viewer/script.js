@@ -67,6 +67,8 @@ function refreshProfession(profession) {
 function refreshImage(image) {
     if (!image || isString(image))
         imageEntry.src = DOMPurify.sanitize(image);
+    
+    imageEntry.style.display = image  ? "block" : "none";
 }
 
 function refreshContacts(contacts) {

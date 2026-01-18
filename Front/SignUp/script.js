@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
-        SendRequest("POST", null, null,
+        await SendRequest("POST", null, null,
             APILink + "Authentification/Register",
             new RegisterDto(emailInput.value, passwordInput.value, passwordConfirmationInput.value),
             _ => location.assign("../index.html"),

@@ -32,28 +32,40 @@ function fillSection(section, title, fillSection) {
     fillSection(section.getElementsByClassName("content")[0]);
 }
 
-function refreshLanguage(language) {
+
+async function refreshCss(css) {
+    
+    let cssContent = DOMPurify.sanitize(css);
+    if(!cssContent || !isString(cssContent))
+        cssContent = await fetch("../Common/Template/style.css").then(response => response.text());
+
+    const lastCss = document.getElementById("css");
+    if(lastCss)
+        lastCss.remove();
+    
+    const style = document.createElement('style');
+    style.id = "css";
+    style.textContent = cssContent;
+    document.head.append(style);
+}
+
+function refreshSystemLanguage(language) {
     if (isString(language))
         document.documentElement.lang = DOMPurify.sanitize(language);
 }
 
-function refreshTitle(title) {
-    if (isString(title))
-        document.title = DOMPurify.sanitize(title);
-}
-
 function refreshName(name) {
-    if (isString(name))
+    if (!name || isString(name))
         nameEntry.textContent = DOMPurify.sanitize(name);
 }
 
 function refreshProfession(profession) {
-    if (isString(profession))
+    if (!profession || isString(profession))
         professionEntry.textContent = DOMPurify.sanitize(profession);
 }
 
 function refreshImage(image) {
-    if (isString(image))
+    if (!image || isString(image))
         imageEntry.src = DOMPurify.sanitize(image);
 }
 
@@ -128,6 +140,7 @@ function refreshSkills(title, skills) {
 }
 
 function refreshWorks(title, works) {
+    
     if (!isString(title) || !works || !Array.isArray(works))
         return;
 
@@ -136,7 +149,7 @@ function refreshWorks(title, works) {
     this.fillSection(worksSection, title, content => {
         works.forEach(element => {
 
-            if (!isString(element.name) || !isString(element.corporation) || !isString(element.description))
+            if (!isString(element.name) || !isString(element.company) || !isString(element.description))
                 return;
 
             // Format date
@@ -164,7 +177,7 @@ function refreshWorks(title, works) {
             const templateClone = document.importNode(workItemTemplate.content, true).children[0];
             const children = templateClone.children;
             children[0].children[0].textContent = DOMPurify.sanitize(element.name);
-            children[0].children[1].textContent = DOMPurify.sanitize(element.corporation);
+            children[0].children[1].textContent = DOMPurify.sanitize(element.company);
             children[0].children[2].textContent = DOMPurify.sanitize(stringDate);
             children[1].innerHTML = DOMPurify.sanitize(element.description);
 
@@ -263,33 +276,32 @@ function refreshHobbies(title, hobbies) {
 
 }
 
-function generateFromJson(dataJson) {
-
-    if (!dataJson || !isString(dataJson.content))
+async function refreshFromJson(dataJson) {
+    
+    if (!dataJson)
         return
-
-    const dataObject = {};
-    dataObject.image = dataJson.image;
-    dataObject.content = JSON.parse(dataJson.content);
-
-    fetch(dataObject.content.SystemLanguage).then(response => {
-        response.json().then(systemJson => {
-            refreshLanguage(systemJson.key);
-            refreshTitle(dataObject.Name);
-            refreshName(dataObject.content.Name);
-            refreshAboutMe(systemJson.AboutMeTitle, dataObject.content.AboutMe);
-            refreshProfession(dataObject.content.Profession);
-            refreshImage(dataObject.image);
-            refreshContacts(dataObject.content.Contacts);
-            refreshLinks(dataObject.content.Links);
-            refreshSkills(systemJson.SkillsTitle, dataObject.content.Skills);
-            refreshWorks(systemJson.WorkTitle, dataObject.content.WorkBlocs);
-            refreshEducations(systemJson.EducationTitle, dataObject.content.EducationBlocs);
-            refreshLanguages(systemJson.LanguagesTitle, dataObject.content.Languages, systemJson.LanguageLevels);
-            refreshProjects(systemJson.ProjectsTitle, dataObject.content.Projects);
-            refreshHobbies(systemJson.HobbiesTitle, dataObject.content.Hobbies);
-        })
-    });
+    
+    if(isString(dataJson.content))
+    {
+        const content = JSON.parse(dataJson.content);
+        const systemLanguage = await fetch(content.SystemLanguage).then(response => response.json());
+        
+        refreshSystemLanguage(systemLanguage.key);
+        refreshName(content.Name);
+        refreshAboutMe(systemLanguage.AboutMeTitle, content.AboutMe);
+        refreshProfession(content.Profession);
+        refreshImage(dataJson.image);
+        refreshContacts(content.Contacts);
+        refreshLinks(content.Links);
+        refreshSkills(systemLanguage.SkillsTitle, content.Skills);
+        refreshWorks(systemLanguage.WorkTitle, content.WorkBlocs);
+        refreshEducations(systemLanguage.EducationTitle, content.EducationBlocs);
+        refreshLanguages(systemLanguage.LanguagesTitle, content.Languages, systemLanguage.LanguageLevels);
+        refreshProjects(systemLanguage.ProjectsTitle, content.Projects);
+        refreshHobbies(systemLanguage.HobbiesTitle, content.Hobbies);   
+    }
+    
+    await refreshCss(dataJson.customCss);
 }
 
 document.addEventListener("DOMContentLoaded", () => {

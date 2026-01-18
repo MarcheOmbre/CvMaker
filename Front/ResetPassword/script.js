@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         resetButton.disabled = true;
         
-        SendRequest("POST", token, null,
+        await SendRequest("POST", token, null,
             APILink + "Authentification/ResetPassword",
             new ResetPasswordDto(passwordInput.value, passwordConfirmationInput.value),
             _ => location.assign("../index.html"),

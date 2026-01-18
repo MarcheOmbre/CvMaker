@@ -14,4 +14,7 @@ public class Cv
     
     [MaxLength(int.MaxValue)]
     public string? Content { get; init; }  = string.Empty;
+    
+    [MaxLength(int.MaxValue)]
+    public string? CustomCss { get; init; }  = string.Empty;
 }

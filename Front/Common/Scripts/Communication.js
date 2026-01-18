@@ -9,7 +9,7 @@ class KeyPairValue{
     }
 }
 
-function SendRequest(type, tokenToInject, parameters, link, data, onSucceed, onFailed){
+async function SendRequest(type, tokenToInject, parameters, link, data, onSucceed, onFailed){
     
     if(type !== "GET" && type !== "POST" && type !== "PUT" && type !== "DELETE")
         throw new Error("Invalid request type");
@@ -48,13 +48,16 @@ function SendRequest(type, tokenToInject, parameters, link, data, onSucceed, onF
         options.body = JSON.stringify(data);
     }
 
-    fetch(link, options)
-        .then(response => 
-        {
-            if (!response.ok) 
-                throw response;
-            return response;
-        })
-        .then(response => response.text().then(text => onSucceed(text)))
-        .catch(error => error.text().then(text => { onFailed(text) }));
+    const response = await fetch(link, options);
+    const textResponse = await response.text();
+    
+    if(response.ok){
+        if(onSucceed)
+            onSucceed(textResponse);
+    } 
+    else 
+    {
+        if(onFailed)
+            onFailed(textResponse);
+    }
 }

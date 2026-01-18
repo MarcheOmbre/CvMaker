@@ -144,6 +144,25 @@ public class CvController : ControllerBase
         };
     }
 
+    [HttpPost("SetCustomCss")]
+    [ProducesResponseType(statusCode: StatusCodes.Status200OK, Type = typeof(string))]
+    [ProducesResponseType(statusCode: StatusCodes.Status404NotFound, Type = typeof(string))]
+    public IActionResult SetCustomCss(SetCvContentDto setCvContentDto)
+    {
+        var result = userRepository.ExecuteStoreProcedure<int>($"{Constants.PublicSchema}.spCvCustomCssSet",
+            new Tuple<string, object>("user", userService.GetId()),
+            new Tuple<string, object>("cv", setCvContentDto.CvId),
+            new Tuple<string, object>("content", htmlSanitizerService.Sanitize(setCvContentDto.Content)));
+        
+        var resultCode = result.Length > 0 ? result[0] : -1;
+        return resultCode switch
+        {
+            1 => BadRequest("One of the parameters is null"),
+            2 => BadRequest("CV does not exist"),
+            0 => Ok("Html updated"),
+            _ => BadRequest("An unexpected error occured")
+        };
+    }
     
     #endregion
 

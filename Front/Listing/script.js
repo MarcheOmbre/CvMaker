@@ -20,20 +20,21 @@ const createButton = document.getElementById("create_button");
 const cvItemTemplate = document.getElementById("cv-item_template");
 
 
-function addCv(cv) {
+async function addCv(cv) {
     if (!isString(cv.name) || cv.name.trim() === "")
         throw new Error("Name can't be empty")
 
     const templateClone = document.importNode(cvItemTemplate.content, true).children[0];
     const children = templateClone.children;
     children[0].value = cv.name;
-    children[0].onchange = () => {
+    children[0].onchange = async function()
+    {
         if (!isString(children[0].value) || children[0].value.trim() === "") {
             children[0].value = cv.name;
             return;
         }
 
-        SendRequest("POST", document.cookie, null,
+        await SendRequest("POST", document.cookie, null,
             APILink + "Cv/SetName", new SetNameDto(cv.id, children[0].value),
             () => {
             },
@@ -46,12 +47,12 @@ function addCv(cv) {
         sessionStorage.setItem(CvIdItemKey, cv.id);
         location.assign("../Generator/index.html");
     }
-    children[2].onclick = () => {
+    children[2].onclick = async function() {
         if (confirm("Are you sure you want to delete this CV?")) {
             const parameters = [];
             parameters.push(new KeyPairValue("id", cv.id));
 
-            SendRequest("DELETE", document.cookie, parameters,
+            await SendRequest("DELETE", document.cookie, parameters,
                 APILink + `Cv/Delete/`, null,
                 _ => templateClone.remove(),
                 res => alert.textContent = res);
@@ -61,16 +62,16 @@ function addCv(cv) {
     cvsParent.appendChild(templateClone);
 }
 
-function reloadCvs() {
-    SendRequest("GET", document.cookie, null, APILink + "Cv/GetAll", null,
-        res => 
+async function reloadCvs() {
+    await SendRequest("GET", document.cookie, null, APILink + "Cv/GetAll", null,
+        async function(res)
         {
             cvsParent.innerHTML = "";
   
             const cvs = JSON.parse(res);
 
             for (const cv of cvs)
-                addCv(cv);
+                await addCv(cv);
 
         }, res => alert.textContent = res);
 }
@@ -83,12 +84,13 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     // Load all the cvs
-    reloadCvs();
+    await reloadCvs();
 
     const parameters = [];
     parameters.push(new KeyPairValue("name", "CV"));
-    createButton.onclick = _ => {
-        SendRequest("PUT", document.cookie, parameters,
+    createButton.onclick = async function() 
+    {
+        await SendRequest("PUT", document.cookie, parameters,
             APILink + "Cv/Create", null,
             _ => reloadCvs(),
             res => alert.textContent = res)

@@ -22,7 +22,7 @@ class RetrievePasswordDto {
 document.addEventListener("DOMContentLoaded", async function () {
 
     // Link buttons
-    retrieveButton.onclick = async _ => {
+    retrieveButton.onclick = async function() {
 
         if (!isMatchingMailPattern(emailInput.value)) {
             message.color = "red";
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         retrieveButton.disabled = true;
 
-        SendRequest("POST", null, null,
+        await SendRequest("POST", null, null,
             APILink + "Authentification/ForgotPassword",
             new RetrievePasswordDto(emailInput.value, "http://localhost:63342/CvBuilderBack/Front/ResetPassword/index.html"),
             _ => {

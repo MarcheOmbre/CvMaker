@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", async function ()
 
         loginButton.disabled = true;
 
-        SendRequest("POST", null, null,
+        await SendRequest("POST", null, null,
             APILink + "Authentification/Log",
             new LoginDto(emailInput.value, passwordInput.value),
             res => {

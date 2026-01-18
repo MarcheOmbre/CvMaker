@@ -33,6 +33,7 @@
 
             <label for="photo-input">Photo:</label>
             <div id="photo">
+                <button id="photo-remove_button" style="display:none">Remove</button>
                 <input type="file" id="photo-input" accept="image/*"/>
                 <img src="" id="photo-reader" alt="photo preview"/>
             </div>
@@ -109,10 +110,16 @@
                     <button id="add-hobby">Add hobby</button>
                 </div>
             </div>
+
+            <label for="custom-css_input">Custom CSS:</label>
+            <div id="custom-css">
+                <button id="css-remove_button" style="display:none">Remove</button>
+                <input type="file" id="custom-css_input" accept=".css"/>
+            </div>
         </div>
 
         <div id="buttons">
-            <button id="download_template_button">Download CSS template</button>
+            <button id="download_template_button">Get template</button>
             <button id="save_button">Save</button>
         </div>
 
@@ -166,7 +173,7 @@
             <button>-</button>
         </div>
         <label>Corporation:</label>
-        <input type="text" name="work-corporation_input" placeholder="corporation" aria-label="corporation"/>
+        <input type="text" name="work-company_input" placeholder="company" aria-label="company"/>
         <label>Date:</label>
         <div class="date-content_div">
             <input type="date" name="work-from-date_input"/>

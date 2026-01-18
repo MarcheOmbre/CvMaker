@@ -35,10 +35,11 @@ input, textarea {
     text-align: right;
 }
 
-#photo {
+#photo, #custom-css {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
+    gap: 10px;
 }
 
 #photo Img {

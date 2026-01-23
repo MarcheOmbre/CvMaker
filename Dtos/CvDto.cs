@@ -13,7 +13,7 @@ public class CvDto
 
     [MaxLength(Constants.MaxNameLength)] public string Name { get; init; } = string.Empty;
 
-    [MaxLength(Constants.MaxUrlLength)] private string SystemLanguage { get; init; } = string.Empty;
+    [MaxLength(Constants.MaxUrlLength)] public string SystemLanguage { get; init; } = string.Empty;
 
     [MaxLength(Constants.MaxFileSize)] public string Image { get; init; } = string.Empty;
 
@@ -57,12 +57,12 @@ public class CvDto
         Console.WriteLine("Is trying to convert");
 
         Id = cv.Id;
+        SystemLanguage = htmlSanitizerService.Sanitize(cv.SystemLanguage);
         Name = htmlSanitizerService.Sanitize(cv.Name);
         Image = htmlSanitizerService.Sanitize(cv.Image);
         Title = htmlSanitizerService.Sanitize(cv.Title);
         Profession = htmlSanitizerService.Sanitize(cv.Profession);
         AboutMe = htmlSanitizerService.Sanitize(cv.AboutMe);
-        SystemLanguage = htmlSanitizerService.Sanitize(cv.SystemLanguage);
         
         var contacts = new List<Contact>();
         Console.WriteLine(cv.Contacts);
@@ -74,7 +74,7 @@ public class CvDto
                 Value = htmlSanitizerService.Sanitize(contact.Value)
             }));
         }
-        this.Contacts = contacts;
+        Contacts = contacts;
 
         var links = new List<Link>();
         if (!string.IsNullOrEmpty(cv.Links))
@@ -85,7 +85,7 @@ public class CvDto
                 Url = htmlSanitizerService.Sanitize(link.Url)
             }));
         }
-        this.Links = links;
+        Links = links;
 
         var works = new List<Work>();
         if (!string.IsNullOrEmpty(cv.Works))
@@ -99,7 +99,7 @@ public class CvDto
                 Description = htmlSanitizerService.Sanitize(work.Description)
             }));
         }
-        this.Works = works;
+        Works = works;
 
         var educations = new List<Education>();
         if (!string.IsNullOrEmpty(cv.Educations))
@@ -111,7 +111,7 @@ public class CvDto
                     Date = education.Date
                 }));
         }
-        this.Educations = educations;
+        Educations = educations;
 
         var projects = new List<Project>();
         if (!string.IsNullOrEmpty(cv.Projects))
@@ -123,7 +123,7 @@ public class CvDto
                 Description = htmlSanitizerService.Sanitize(project.Description)
             }));
         }
-        this.Projects = projects;
+        Projects = projects;
 
         var languages = new List<Language>();
         if (!string.IsNullOrEmpty(cv.Languages))
@@ -134,7 +134,7 @@ public class CvDto
                 Level = language.Level
             }));
         }
-        this.Languages = languages;
+        Languages = languages;
 
         var skills = new List<Skill>();
         if (!string.IsNullOrEmpty(cv.Skills))

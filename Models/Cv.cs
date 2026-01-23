@@ -38,4 +38,30 @@ public class Cv
     [MaxLength(Constants.MaxFileSize)] public string CustomHtml { get; set; } = string.Empty;
     
     [MaxLength(Constants.MaxFileSize)] public string CustomCss { get; set; } = string.Empty;
+
+    
+    public static Cv Duplicate(Cv cv)
+    {
+        ArgumentNullException.ThrowIfNull(cv);
+
+        return new Cv
+        {
+            SystemLanguage = cv.SystemLanguage,
+            Name = cv.Name + " (Copy)",
+            Image = cv.Image,
+            Title = cv.Title,
+            Profession = cv.Profession,
+            AboutMe = cv.AboutMe,
+            Contacts = cv.Contacts,
+            Links = cv.Links,
+            Works = cv.Works,
+            Educations = cv.Educations,
+            Projects = cv.Projects,
+            Languages = cv.Languages,
+            Skills = cv.Skills,
+            Hobbies = cv.Hobbies,
+            CustomHtml = cv.CustomHtml,
+            CustomCss = cv.CustomCss
+        };
+    }
 }

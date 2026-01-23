@@ -1,40 +1,223 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CvBuilderBack.Common;
 using CvBuilderBack.Models;
+using CvBuilderBack.Services.Interfaces;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace CvBuilderBack.Dtos;
 
 public class CvDto
 {
     [Required] public int Id { get; init; }
-    
-    [MaxLength(Constants.MaxUrlLength)] public string SystemLanguage { get; set; } = string.Empty;
 
-    [MaxLength(Constants.MaxFileSize)] public string Image { get; set; } = string.Empty;
-    
-    [MaxLength(Constants.MaxNameLength)] public string Title { get; set; } = string.Empty;
-    
-    [MaxLength(Constants.MaxNameLength)] public string Profession { get; set; } = string.Empty;
-    
-    [MaxLength(Constants.MaxDescriptionLength)] public string AboutMe { get; set; } = string.Empty;
+    [MaxLength(Constants.MaxNameLength)] public string Name { get; init; } = string.Empty;
 
-    [MaxLength(Constants.MaxItems)] public IList<Contact> Contacts { get; set; } = [];
+    [MaxLength(Constants.MaxUrlLength)] private string SystemLanguage { get; init; } = string.Empty;
+
+    [MaxLength(Constants.MaxFileSize)] public string Image { get; init; } = string.Empty;
+
+    [MaxLength(Constants.MaxNameLength)] public string Title { get; init; } = string.Empty;
+
+    [MaxLength(Constants.MaxNameLength)] public string Profession { get; init; } = string.Empty;
+
+    [MaxLength(Constants.MaxDescriptionLength)] public string AboutMe { get; init; } = string.Empty;
+
+    [MaxLength(Constants.MaxItems)] public IList<Contact> Contacts { get; init; } = [];
+
+    [MaxLength(Constants.MaxItems)] public IList<Link> Links { get; init; } = [];
+
+    [MaxLength(Constants.MaxItems)] public IList<Work> Works { get; init; } = [];
+
+    [MaxLength(Constants.MaxItems)] public IList<Education> Educations { get; init; } = [];
+
+    [MaxLength(Constants.MaxItems)] public IList<Project> Projects { get; init; } = [];
+
+    [MaxLength(Constants.MaxItems)] public IList<Language> Languages { get; init; } = [];
+
+    [MaxLength(Constants.MaxItems)] public IList<Skill> Skills { get; init; } = [];
+
+    [MaxLength(Constants.MaxItems)] public IList<Hobby> Hobbies { get; init; } = [];
+
+    [MaxLength(int.MaxValue)] public string CustomHtml { get; init; } = string.Empty;
+
+    [MaxLength(int.MaxValue)] public string CustomCss { get; init; } = string.Empty;
+
+
+    [JsonConstructor]
+    public CvDto()
+    {
+        
+    }
     
-    [MaxLength(Constants.MaxItems)] public IList<Link> Links { get; set; } = [];
+    public CvDto(Cv cv, IHtmlSanitizerService htmlSanitizerService)
+    {
+        ArgumentNullException.ThrowIfNull(cv);
+        
+        Console.WriteLine("Is trying to convert");
+
+        Id = cv.Id;
+        Name = htmlSanitizerService.Sanitize(cv.Name);
+        Image = htmlSanitizerService.Sanitize(cv.Image);
+        Title = htmlSanitizerService.Sanitize(cv.Title);
+        Profession = htmlSanitizerService.Sanitize(cv.Profession);
+        AboutMe = htmlSanitizerService.Sanitize(cv.AboutMe);
+        SystemLanguage = htmlSanitizerService.Sanitize(cv.SystemLanguage);
+        
+        var contacts = new List<Contact>();
+        Console.WriteLine(cv.Contacts);
+        if (!string.IsNullOrEmpty(cv.Contacts))
+        {
+            contacts.AddRange((JsonSerializer.Deserialize<List<Contact>>(cv.Contacts) ?? []).Select(contact => new Contact
+            {
+                Type = contact.Type,
+                Value = htmlSanitizerService.Sanitize(contact.Value)
+            }));
+        }
+        this.Contacts = contacts;
+
+        var links = new List<Link>();
+        if (!string.IsNullOrEmpty(cv.Links))
+        {
+            links.AddRange((JsonSerializer.Deserialize<List<Link>>(cv.Links) ?? []).Select(link => new Link
+            {
+                Name = htmlSanitizerService.Sanitize(link.Name),
+                Url = htmlSanitizerService.Sanitize(link.Url)
+            }));
+        }
+        this.Links = links;
+
+        var works = new List<Work>();
+        if (!string.IsNullOrEmpty(cv.Works))
+        {
+            works.AddRange((JsonSerializer.Deserialize<List<Work>>(cv.Works) ?? []).Select(work => new Work
+            {
+                Title = htmlSanitizerService.Sanitize(work.Title),
+                Company = htmlSanitizerService.Sanitize(work.Company),
+                From = work.From,
+                To = work.To,
+                Description = htmlSanitizerService.Sanitize(work.Description)
+            }));
+        }
+        this.Works = works;
+
+        var educations = new List<Education>();
+        if (!string.IsNullOrEmpty(cv.Educations))
+        {
+            educations.AddRange((JsonSerializer.Deserialize<List<Education>>(cv.Educations) ?? [])
+                .Select(education => new Education
+                {
+                    Title = htmlSanitizerService.Sanitize(education.Title), 
+                    Date = education.Date
+                }));
+        }
+        this.Educations = educations;
+
+        var projects = new List<Project>();
+        if (!string.IsNullOrEmpty(cv.Projects))
+        {
+            projects.AddRange((JsonSerializer.Deserialize<List<Project>>(cv.Projects) ?? []).Select(project => new Project
+            {
+                Title = htmlSanitizerService.Sanitize(project.Title),
+                Date = project.Date,
+                Description = htmlSanitizerService.Sanitize(project.Description)
+            }));
+        }
+        this.Projects = projects;
+
+        var languages = new List<Language>();
+        if (!string.IsNullOrEmpty(cv.Languages))
+        {
+            languages.AddRange((JsonSerializer.Deserialize<List<Language>>(cv.Languages) ?? []).Select(language => new Language
+            {
+                Name = htmlSanitizerService.Sanitize(language.Name),
+                Level = language.Level
+            }));
+        }
+        this.Languages = languages;
+
+        var skills = new List<Skill>();
+        if (!string.IsNullOrEmpty(cv.Skills))
+        {
+            skills.AddRange((JsonSerializer.Deserialize<List<Skill>>(cv.Skills) ?? [])
+                .Select(skill => new Skill
+                {
+                    Name = htmlSanitizerService.Sanitize(skill.Name),
+                    Level = skill.Level
+                }));
+        }
+        Skills = skills;
+
+        var hobbies = new List<Hobby>();
+        if (!string.IsNullOrEmpty(cv.Hobbies))
+        {
+            hobbies.AddRange((JsonSerializer.Deserialize<List<Skill>>(cv.Hobbies) ?? [])
+                .Select(skill => new Hobby { Name = htmlSanitizerService.Sanitize(skill.Name) }));
+        }
+        Hobbies = hobbies;
+        
+        CustomHtml = htmlSanitizerService.Sanitize(cv.CustomHtml);
+        CustomCss = htmlSanitizerService.Sanitize(cv.CustomCss);
+    }
     
-    [MaxLength(Constants.MaxItems)] public IList<Work> Works { get; set; } = [];
     
-    [MaxLength(Constants.MaxItems)] public IList<Education> Educations { get; set; } = [];
-    
-    [MaxLength(Constants.MaxItems)] public IList<Project> Projects { get; set; } = [];
-    
-    [MaxLength(Constants.MaxItems)] public IList<Language> Languages { get; set; } = [];
-    
-    [MaxLength(Constants.MaxItems)] public IList<Skill> Skills { get; set; } = [];
-    
-    [MaxLength(Constants.MaxItems)] public IList<Hobby> Hobbies { get; set; } = [];
-    
-    [MaxLength(int.MaxValue)] public string CustomHtml { get; set; } = string.Empty;
-    
-    [MaxLength(int.MaxValue)] public string CustomCss { get; set; } = string.Empty;
+    public void InjectInto(Cv cv, IHtmlSanitizerService htmlSanitizerService)
+    {
+        ArgumentNullException.ThrowIfNull(cv);
+
+        cv.SystemLanguage = htmlSanitizerService.Sanitize(SystemLanguage);
+        cv.Name = htmlSanitizerService.Sanitize(Name);
+        cv.Image = htmlSanitizerService.Sanitize(Image);
+        cv.Title = htmlSanitizerService.Sanitize(Title);
+        cv.Profession = htmlSanitizerService.Sanitize(Profession);
+        cv.AboutMe = htmlSanitizerService.Sanitize(AboutMe);
+
+        foreach (var contact in Contacts)
+            contact.Value = htmlSanitizerService.Sanitize(contact.Value);
+        cv.Contacts = JsonSerializer.Serialize(Contacts);
+
+        foreach (var link in Links)
+        {
+            link.Name = htmlSanitizerService.Sanitize(link.Name);
+            link.Url = htmlSanitizerService.Sanitize(link.Url);
+        }
+
+        cv.Links = JsonSerializer.Serialize(Links);
+
+        foreach (var work in Works)
+        {
+            work.Title = htmlSanitizerService.Sanitize(work.Title);
+            work.Company = htmlSanitizerService.Sanitize(work.Company);
+            work.Description = htmlSanitizerService.Sanitize(work.Description);
+        }
+
+        cv.Works = JsonSerializer.Serialize(Works);
+
+        foreach (var education in Educations)
+            education.Title = htmlSanitizerService.Sanitize(education.Title);
+        cv.Educations = JsonSerializer.Serialize(Educations);
+
+        foreach (var project in Projects)
+        {
+            project.Title = htmlSanitizerService.Sanitize(project.Title);
+            project.Description = htmlSanitizerService.Sanitize(project.Description);
+        }
+
+        cv.Projects = JsonSerializer.Serialize(Projects);
+
+        foreach (var language in Languages)
+            language.Name = htmlSanitizerService.Sanitize(language.Name);
+        cv.Languages = JsonSerializer.Serialize(Languages);
+
+        foreach (var skill in Skills)
+            skill.Name = htmlSanitizerService.Sanitize(skill.Name);
+        cv.Skills = JsonSerializer.Serialize(Skills);
+
+        foreach (var hobby in Hobbies)
+            hobby.Name = htmlSanitizerService.Sanitize(hobby.Name);
+        cv.Hobbies = JsonSerializer.Serialize(Hobbies);
+
+        cv.CustomHtml = htmlSanitizerService.Sanitize(CustomHtml);
+        cv.CustomCss = htmlSanitizerService.Sanitize(CustomCss);
+    }
 }

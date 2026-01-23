@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using CvBuilderBack.Common;
+﻿using CvBuilderBack.Common;
 using CvBuilderBack.Dtos;
 using CvBuilderBack.Models;
 using CvBuilderBack.Repositories;
@@ -28,6 +27,8 @@ public class CvController : ControllerBase
 
     private bool HasRight(int userId, int cvId) =>
         userRepository.Get<UserCvJoin>(u => u.UserId == userId && u.CvId == cvId) != null;
+    
+    private bool HasSpace(int userId) => userRepository.GetAll<UserCvJoin>(u => u.UserId == userId).Count < Constants.MaxCvCount;
 
 
     #region Gets
@@ -38,7 +39,7 @@ public class CvController : ControllerBase
     public IActionResult GetAll()
     {
         var userCvId = userRepository.GetAll<UserCvJoin>(u => u.UserId == userService.GetId()).Select(x => x.CvId);
-        return Ok(userRepository.GetAll<Cv>(cv => userCvId.Contains(cv.Id)));
+        return Ok(userRepository.GetAll<Cv>(cv => userCvId.Contains(cv.Id)).Select(x => new GetAllCvsDto {Id = x.Id, Name = x.Name}));
     }
 
     [HttpGet("Get")]
@@ -51,112 +52,8 @@ public class CvController : ControllerBase
 
         if (!userRepository.TryGetById<Cv>(id, out var cv) || cv is null)
             return NotFound("Cv not found");
-
-        // Format cv
-        var cvDto = new CvDto
-        {
-            Id = cv.Id,
-            Image = htmlSanitizerService.Sanitize(cv.Image),
-            Title = htmlSanitizerService.Sanitize(cv.Title),
-            Profession = htmlSanitizerService.Sanitize(cv.Profession),
-            AboutMe = htmlSanitizerService.Sanitize(cv.AboutMe)
-        };
-
-        var contacts = new List<Contact>();
-        Console.WriteLine(cv.Contacts);
-        if (!string.IsNullOrEmpty(cv.Contacts))
-        {
-            contacts.AddRange((JsonSerializer.Deserialize<List<Contact>>(cv.Contacts) ?? []).Select(contact => new Contact
-            {
-                Type = contact.Type,
-                Value = htmlSanitizerService.Sanitize(contact.Value)
-            }));
-        }
-        cvDto.Contacts = contacts;
-
-        var links = new List<Link>();
-        if (!string.IsNullOrEmpty(cv.Links))
-        {
-            links.AddRange((JsonSerializer.Deserialize<List<Link>>(cv.Links) ?? []).Select(link => new Link
-            {
-                Name = htmlSanitizerService.Sanitize(link.Name),
-                Url = htmlSanitizerService.Sanitize(link.Url)
-            }));
-        }
-        cvDto.Links = links;
-
-        var works = new List<Work>();
-        if (!string.IsNullOrEmpty(cv.Works))
-        {
-            works.AddRange((JsonSerializer.Deserialize<List<Work>>(cv.Works) ?? []).Select(work => new Work
-            {
-                Title = htmlSanitizerService.Sanitize(work.Title),
-                Company = htmlSanitizerService.Sanitize(work.Company),
-                From = work.From,
-                To = work.To,
-                Description = htmlSanitizerService.Sanitize(work.Description)
-            }));
-        }
-        cvDto.Works = works;
-
-        var educations = new List<Education>();
-        if (!string.IsNullOrEmpty(cv.Educations))
-        {
-            educations.AddRange((JsonSerializer.Deserialize<List<Education>>(cv.Educations) ?? [])
-                .Select(education => new Education
-                {
-                    Title = htmlSanitizerService.Sanitize(education.Title), 
-                    Date = education.Date
-                }));
-        }
-        cvDto.Educations = educations;
-
-        var projects = new List<Project>();
-        if (!string.IsNullOrEmpty(cv.Projects))
-        {
-            projects.AddRange((JsonSerializer.Deserialize<List<Project>>(cv.Projects) ?? []).Select(project => new Project
-            {
-                Title = htmlSanitizerService.Sanitize(project.Title),
-                Date = project.Date,
-                Description = htmlSanitizerService.Sanitize(project.Description)
-            }));
-        }
-        cvDto.Projects = projects;
-
-        var languages = new List<Language>();
-        if (!string.IsNullOrEmpty(cv.Languages))
-        {
-            languages.AddRange((JsonSerializer.Deserialize<List<Language>>(cv.Languages) ?? []).Select(language => new Language
-            {
-                Name = htmlSanitizerService.Sanitize(language.Name),
-                Level = language.Level
-            }));
-        }
-        cvDto.Languages = languages;
-
-        var skills = new List<Skill>();
-        if (!string.IsNullOrEmpty(cv.Skills))
-        {
-            skills.AddRange((JsonSerializer.Deserialize<List<Skill>>(cv.Skills) ?? [])
-                .Select(skill => new Skill
-                {
-                    Name = htmlSanitizerService.Sanitize(skill.Name),
-                    Level = skill.Level
-                }));
-        }
-        cvDto.Skills = skills;
-
-        var hobbies = new List<Hobby>();
-        if (!string.IsNullOrEmpty(cv.Hobbies))
-        {
-            hobbies.AddRange((JsonSerializer.Deserialize<List<Skill>>(cv.Hobbies) ?? [])
-                .Select(skill => new Hobby { Name = htmlSanitizerService.Sanitize(skill.Name) }));
-        }
-        cvDto.Hobbies = hobbies;
-        cvDto.CustomHtml = htmlSanitizerService.Sanitize(cv.CustomHtml);
-        cvDto.CustomCss = htmlSanitizerService.Sanitize(cv.CustomCss);
         
-        return Ok(cvDto);
+        return Ok(new CvDto(cv, htmlSanitizerService));
     }
 
     #endregion
@@ -169,15 +66,15 @@ public class CvController : ControllerBase
     [ProducesResponseType(statusCode: StatusCodes.Status404NotFound, Type = typeof(string))]
     public IActionResult Create(string name)
     {
-        // Get cv count
-        var userCvs = userRepository.GetAll<UserCvJoin>(x => x.UserId == userService.GetId());
-        if(userCvs.Count >= Constants.MaxCvCount)
+        var userId = userService.GetId();
+        
+        if(!HasSpace(userId))
             return BadRequest("You have reached the maximum number of cvs");
         
         var cv = new Cv { Name = name };
         if (!userRepository.Add(cv) || 
             !userRepository.SaveChanges() || 
-            !userRepository.Add(new UserCvJoin {UserId = userService.GetId(), CvId = cv.Id}) || 
+            !userRepository.Add(new UserCvJoin {UserId = userId, CvId = cv.Id}) || 
             !userRepository.SaveChanges())
             return BadRequest("An error occured while creating the cv");
 
@@ -212,66 +109,42 @@ public class CvController : ControllerBase
         if (!HasRight(userService.GetId(), cvDto.Id))
             return Unauthorized();
         
-        var updateSucceed = userRepository.Update<Cv>(cvDto.Id, cv =>
-        {
-            cv.SystemLanguage = htmlSanitizerService.Sanitize(cvDto.SystemLanguage);
-            cv.Image = htmlSanitizerService.Sanitize(cvDto.Image);
-            cv.Title = htmlSanitizerService.Sanitize(cvDto.Title);
-            cv.Profession = htmlSanitizerService.Sanitize(cvDto.Profession);
-            cv.AboutMe = htmlSanitizerService.Sanitize(cvDto.AboutMe);
-
-            foreach (var contact in cvDto.Contacts) 
-                contact.Value = htmlSanitizerService.Sanitize(contact.Value);
-            cv.Contacts = JsonSerializer.Serialize(cvDto.Contacts);
-
-            foreach (var link in cvDto.Links)
-            {
-                link.Name = htmlSanitizerService.Sanitize(link.Name);
-                link.Url = htmlSanitizerService.Sanitize(link.Url);
-            }
-            cv.Links = JsonSerializer.Serialize(cvDto.Links);
-
-            foreach (var work in cvDto.Works)
-            {
-                work.Title = htmlSanitizerService.Sanitize(work.Title);
-                work.Company = htmlSanitizerService.Sanitize(work.Company);
-                work.Description = htmlSanitizerService.Sanitize(work.Description);
-            }
-            cv.Works = JsonSerializer.Serialize(cvDto.Works);
-            
-            foreach (var education in cvDto.Educations) 
-                education.Title = htmlSanitizerService.Sanitize(education.Title);
-            cv.Educations = JsonSerializer.Serialize(cvDto.Educations);
-
-            foreach (var project in cvDto.Projects)
-            {
-                project.Title = htmlSanitizerService.Sanitize(project.Title);
-                project.Description = htmlSanitizerService.Sanitize(project.Description);
-            }
-            cv.Projects = JsonSerializer.Serialize(cvDto.Projects);
-            
-            foreach (var language in cvDto.Languages)
-                language.Name = htmlSanitizerService.Sanitize(language.Name);
-            cv.Languages = JsonSerializer.Serialize(cvDto.Languages);
-            
-            foreach (var skill in cvDto.Skills)
-                skill.Name = htmlSanitizerService.Sanitize(skill.Name);
-            cv.Skills = JsonSerializer.Serialize(cvDto.Skills);
-            
-            foreach (var hobby in cvDto.Hobbies) 
-                hobby.Name = htmlSanitizerService.Sanitize(hobby.Name);
-            cv.Hobbies = JsonSerializer.Serialize(cvDto.Hobbies);
-            
-            cv.CustomHtml = htmlSanitizerService.Sanitize(cvDto.CustomHtml);
-            cv.CustomCss = htmlSanitizerService.Sanitize(cvDto.CustomCss);
-        });
         
-        if (!updateSucceed || !userRepository.SaveChanges())
+        if (!userRepository.Update<Cv>(cvDto.Id, cv => cvDto.InjectInto(cv, htmlSanitizerService)) || !userRepository.SaveChanges())
             return BadRequest("An error occured while updating the cv");
 
         return Ok("Updated");
     }
 
+    [HttpPut("Duplicate")]
+    [ProducesResponseType(statusCode: StatusCodes.Status200OK, Type = typeof(string))]
+    [ProducesResponseType(statusCode: StatusCodes.Status404NotFound, Type = typeof(string))]
+    public IActionResult Duplicate(int id)
+    {
+        var userId = userService.GetId();
+        
+        if (!HasRight(userId, id))
+            return Unauthorized();
+        
+        if(!userRepository.TryGetById<Cv>(id, out var cv))
+            return BadRequest("Cv not found");
+        
+        if(!HasSpace(userId))
+            return BadRequest("You have reached the maximum number of cvs");
+        
+        // Create the cv
+        var duplicateCv = Cv.Duplicate(cv);
+        
+        if(!userRepository.Add(duplicateCv) || !userRepository.SaveChanges())
+            return BadRequest("An error occured while duplicating the cv");
+        
+        // Link it to the user
+        if(!userRepository.Add(new UserCvJoin {UserId = userId, CvId = duplicateCv.Id}) || !userRepository.SaveChanges())
+            return BadRequest("An error occured while linking the cv to the user");
+        
+        return Ok("Duplicated");
+    }
+    
     #endregion
 
 
